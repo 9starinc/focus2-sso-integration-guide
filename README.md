@@ -1,167 +1,131 @@
 # Focus2 Application  
 # SAML 2.0 / Single Sign-On (SSO) Integration Guide
 
-This guide provides technical instructions for integrating your organization's Identity Provider (IdP) with the **Focus2 application** using **SAML 2.0 Single Sign-On (SSO)**.
+---
 
-This document includes:
+## Table of Contents
 
-1. A **generic SAML 2.0 integration guide** applicable to any compliant Identity Provider  
-2. A dedicated section with **Microsoft Entra ID (Azure AD) configuration instructions** as a reference implementation  
+- [Overview](#overview)  
+- [Information Customer Needs](#information-customer-needs)  
+  - [Focus2 Service Provider Metadata](#1-focus2-service-provider-metadata)  
+  - [Service Provider Core Values](#2-service-provider-core-values)  
+  - [Required SAML Attributes](#3-required-saml-attributes)  
+  - [NameID Requirements](#4-nameid-requirements)  
+- [Information Needed From Customer](#information-needed-from-customer)  
+- [Testing the Integration](#testing-the-integration)  
+- [Microsoft Entra ID (Azure AD) Configuration Example](#microsoft-entra-id-azure-ad-configuration-example)  
 
 ---
 
-# Table of Contents
+## Overview
 
-1. [Overview](#overview)  
-2. [Focus2 Service Provider Metadata](#focus2-service-provider-metadata)  
-3. [Generic SAML 2.0 Configuration Requirements](#generic-saml-20-configuration-requirements)  
-4. [Required SAML Attributes](#required-saml-attributes)  
-5. [NameID Requirements](#nameid-requirements)  
-6. [Information Required From Customer Identity Provider](#information-required-from-customer-identity-provider)  
-7. [Testing the Integration](#testing-the-integration)  
-8. [Configuration Summary](#configuration-summary)  
-9. [Troubleshooting Checklist](#troubleshooting-checklist)  
-10. [Microsoft Entra ID (Azure AD) Configuration Example](#microsoft-entra-id-azure-ad-configuration-example)
-
----
-
-# Overview
-
-The Focus2 application supports authentication using **SAML 2.0 Single Sign-On (SSO)**.
+The **Focus2 application** supports authentication using **SAML 2.0 Single Sign-On (SSO)**.
 
 In this integration:
 
-- **Focus2** acts as the **SAML 2.0 Service Provider (SP)**
-- Your organization’s system acts as the **Identity Provider (IdP)**
+- **Focus2** acts as the **Service Provider (SP)**  
+- Your organization’s system acts as the **Identity Provider (IdP)**  
+
+### Technical Requirements
 
 The integration requires:
 
 - SAML 2.0 Browser SSO profile  
-- Signed SAML responses  
-- Encrypted SAML assertions  
+- Signed SAML Responses  
+- Encrypted SAML Assertions  
 - Required user attributes (First Name, Last Name, Email)
 
 ---
 
-# Focus2 Service Provider Metadata
+## Information Customer Needs
 
-Focus2 provides its Service Provider metadata at:
+### 1. Focus2 Service Provider Metadata
 
+SP Metadata URL:
+
+```
 https://fc.proxy.elasticsso.com/saml/module.php/saml/sp/metadata.php/fc-sp-proxy
+```
 
-This metadata includes:
+This metadata contains:
 
-- Service Provider EntityID  
+- SP EntityID  
 - Assertion Consumer Service (ACS) URL  
 - Signing certificate  
 - Encryption certificate  
-- Single Logout endpoint (if configured)  
-
-Your Identity Provider should consume this metadata when establishing the trust relationship.
+- Single Logout endpoint (if configured)
 
 ---
 
-# Generic SAML 2.0 Configuration Requirements
+### 2. Service Provider Core Values
 
-When configuring your Identity Provider for Focus2 SSO, ensure the following settings are applied.
-
-## Protocol Profile
-
-- Use **SAML 2.0 Browser SSO**
-
-## Signing Requirements
-
-- The **SAML Response must be signed**
-- The IdP signing certificate must be included in your metadata
-
-## Encryption Requirements
-
-- The **SAML Assertion must be encrypted**
-- Use the encryption certificate provided in the Focus2 SP metadata
-
-## Binding
-
-- HTTP-POST binding is recommended for SAML responses
+| Setting | Value |
+|----------|-------|
+| SP EntityID | `https://fc.proxy.elasticsso.com/saml/sp` |
+| ACS URL | `https://fc.proxy.elasticsso.com/saml/module.php/saml/sp/saml2-acs.php/fc-sp-proxy` |
+| Protocol | SAML 2.0 |
+| Profile | Browser SSO |
+| Binding | HTTP-POST |
+| Sign Response | Required |
+| Encrypt Assertion | Required |
 
 ---
 
-# Required SAML Attributes
+### 3. Required SAML Attributes
 
-Focus2 requires the following attributes to provision and identify users:
+| Logical Field | Expected Attribute |
+|---------------|-------------------|
+| First Name | Given Name |
+| Last Name | Surname |
+| Email Address | Email |
 
-- First Name  
-- Last Name  
-- Email Address  
-
-Focus2 accepts valid SAML 2.0 attribute names and formats.
-
-Please provide:
-
-- The exact SAML2 attribute names used
-
-Additional attributes may be requested depending on customer requirements.
+- Email must be unique per user.  
+- Custom attribute names must be communicated during setup.
 
 ---
 
-# NameID Requirements
+### 4. NameID Requirements
 
-The NameID:
-
-- May be configured as **Transient**
-- Is not required to be a specific format
-- Email is typically used as the primary identifier within Focus2
-
-If the email address is not globally unique in your organization, configure a unique scoped identifier instead.
+- NameID may be **Transient**, **EmailAddress**, or another unique identifier.  
+- Email is typically used as the primary identifier.  
 
 ---
 
-# Information Required From Customer Identity Provider
+## Information Needed From Customer
 
-To establish trust with your Identity Provider, Focus2 requires **one of the following**:
+### Option 1 – Identity Provider Metadata (Preferred)
 
-## Option 1 – Identity Provider Metadata (Preferred)
-
-Provide either:
+Provide:
 
 - Identity Provider metadata file  
-**or**
+  **OR**
 - Identity Provider metadata URL  
 
-## Option 2 – Equivalent Configuration Details
+### Option 2 – Manual Configuration Details
 
-If metadata cannot be provided, please supply the following:
+If metadata cannot be provided, supply:
 
 - IdP EntityID  
-- Signing certificate  
-- Encryption certificate (if separate from signing certificate)  
+- IdP signing certificate  
+- IdP encryption certificate (if separate)  
 - Single Sign-On endpoint URL  
 - SSO binding  
 - Single Logout endpoint (if supported)
 
-## SAML 2.0 Attribute Name Requirements
+### Required Confirmation
 
-Focus2 expects SAML 2.0 attributes to be included in the assertion using OID-based attribute naming.
+Please confirm:
 
-The following attributes are required:
-
-| Logical Field | SAML Attribute Name |
-|---------------|-----------------------------------|
-| First Name | `urn:oid:2.5.4.42` |
-| Last Name | `urn:oid:2.5.4.4` |
-| Email Address | `urn:oid:0.9.2342.19200300.100.1.3` |
-
-### Notes
-
-- Attribute names are case-sensitive.
-- If your Identity Provider uses different attribute names, please provide the exact names being sent.
-- Custom attribute names are supported, provided they are communicated during configuration.
-- The email attribute must contain a unique value per user.
+- SAML response is signed  
+- Assertion is encrypted  
+- Required attributes are included  
+- Email is unique per user  
 
 ---
 
-# Testing the Integration
+## Testing the Integration
 
-Once configuration is complete and Focus2 confirms readiness, initiate login using:
+Initiate login using:
 
 ```
 https://fc.proxy.elasticsso.com/saml/module.php/elasticsso/sso.php?entityID=customer_idp_entityID
@@ -175,121 +139,33 @@ customer_idp_entityID
 
 With your Identity Provider’s EntityID.
 
-Focus2 support will notify you when testing can begin.
-
 ---
 
-# Configuration Summary
+## Microsoft Entra ID (Azure AD) Configuration Example
 
-| Setting | Required Value |
-|----------|----------------|
-| Protocol | SAML 2.0 |
-| Profile | Browser SSO |
-| Sign Response | Yes |
-| Encrypt Assertion | Yes |
-| Required Attributes | First Name, Last Name, Email |
-| NameID | Transient or unique identifier |
-
----
-
-# Troubleshooting Checklist
-
-If authentication fails:
-
-- Verify EntityID matches exactly  
-- Confirm SAML response is signed  
-- Confirm assertion is encrypted  
-- Verify required attributes are included  
-- Confirm user exists and is authorized  
-- Check certificate validity and expiration  
-- Confirm ACS URL matches metadata  
-
----
-
-# Microsoft Entra ID (Azure AD) Configuration Example
-
-The following section provides step-by-step instructions for integrating Focus2 SSO using Microsoft Entra ID.
-
-## Create the Enterprise Application
+### Create Enterprise Application
 
 1. Log into https://entra.microsoft.com  
-2. Navigate to **Identity → Applications → Enterprise applications**  
-3. Select **+ New application**  
-4. Choose **+ Create your own application**  
-5. Name the application: `Focus2`  
-6. Select **Integrate any other application you don't find in the gallery (Non-gallery)**  
-7. Click **Create**
-
----
-
-## Configure SAML Single Sign-On
-
-1. Open the application  
-2. Select **Single sign-on**  
-3. Choose **SAML**
+2. Navigate to Enterprise Applications  
+3. Create new Non-gallery application named `Focus2`
 
 ### Basic SAML Configuration
 
-Configure the following:
-
 | Field | Value |
 |-------|-------|
-| Identifier (Entity ID) | `https://fc.proxy.elasticsso.com/saml/sp` |
-| Reply URL (ACS URL) | `https://fc.proxy.elasticsso.com/saml/module.php/saml/sp/saml2-acs.php/fc-sp-proxy` |
-| Sign-on URL | *Leave blank* |
-| Relay State | *Leave blank* |
-| Logout URL | *If provided in metadata* |
+| Identifier | `https://fc.proxy.elasticsso.com/saml/sp` |
+| Reply URL | `https://fc.proxy.elasticsso.com/saml/module.php/saml/sp/saml2-acs.php/fc-sp-proxy` |
 
-Save changes.
+### Attribute Mapping
 
----
+| SAML Claim Name | Entra Source |
+|-----------------|--------------|
+| `givenname` | user.givenname |
+| `surname` | user.surname |
+| `emailaddress` | user.mail |
 
-## Signing Configuration
+It is acceptable to use the **default Microsoft Entra claim names**. No OID customization is required.
 
-- Set signing option to: **Sign SAML response**
-- Download Federation Metadata XML
-- Provide this to Focus2 support
+### Assign Users
 
----
-
-## Encryption Configuration
-
-- Upload encryption certificate from SP metadata
-- Enable **Encrypt assertions**
-- Save changes
-
----
-
-## Attribute Mapping
-
-Navigate to **Attributes & Claims** and configure:
-
-| SAML Attribute | Entra Source |
-|---------------|--------------|
-| firstName | user.givenname |
-| lastName | user.surname |
-| email | user.mail |
-
----
-
-## NameID Configuration
-
-Recommended:
-
-- Source attribute: `user.mail`
-- Format: `Transient` or `EmailAddress`
-
-If email is not unique, use `user.userprincipalname`.
-
----
-
-## Assign Users
-
-- Navigate to **Users and groups**
-- Assign test and production users
-
-Users must be assigned before accessing the application.
-
----
-
-For additional assistance, please contact Focus2 support.
+Assign test and production users before access.
