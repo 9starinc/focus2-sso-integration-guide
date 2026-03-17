@@ -173,6 +173,8 @@ With your Identity Provider’s EntityID.
 
 Save changes.
 
+Provide the metadata URL to Focus2.
+
 ---
 
 ### Focus2 SP Certificate (Signing & Encryption)
@@ -208,12 +210,14 @@ KwP31R7m1J9arub+dAck5tPm2w==
 
 ### Example Attribute Mapping in Entra ID
 
-| SAML Attribute/Claim | Source Attribute |
-|---------------|------------------|
-| `http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname` | `user.givenname` |
-| `http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname` | `user.surname` |
-| `http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress` | `user.mail` |
+| Logical Field | Source | SAML Attribute/Claim |
+|---------------|---------------|------------------|
+| First Name | `user.givenname` | `http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname` |
+| Last Name | `user.surname` | `http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname` |
+| Email Address | `user.mail` | `http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress` |
 
+- Email must be unique per user.  
+- Custom attribute names must be communicated during setup.
 ---
 
 ### Assign Users
