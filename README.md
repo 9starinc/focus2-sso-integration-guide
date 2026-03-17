@@ -206,13 +206,13 @@ KwP31R7m1J9arub+dAck5tPm2w==
 
 ---
 
-### Attribute Mapping in Entra ID
+### Example Attribute Mapping in Entra ID
 
-| SAML Attribute | Source Attribute |
+| SAML Attribute/Claim | Source Attribute |
 |---------------|------------------|
-| `urn:oid:2.5.4.42` | `user.givenname` |
-| `urn:oid:2.5.4.4` | `user.surname` |
-| `urn:oid:0.9.2342.19200300.100.1.3` | `user.mail` |
+| `http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname` | `user.givenname` |
+| `http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname` | `user.surname` |
+| `http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress` | `user.mail` |
 
 ---
 
