@@ -73,11 +73,11 @@ This metadata contains:
 
 ### 3. Required SAML Attributes
 
-| Logical Field | Expected Attribute |
+| Logical Field | Expected SAML Attribute |
 |---------------|-------------------|
-| First Name | Given Name |
-| Last Name | Surname |
-| Email Address | Email |
+| First Name | `urn:oid:2.5.4.42` |
+| Last Name | `urn:oid:2.5.4.4` |
+| Email Address | `urn:oid:0.9.2342.19200300.100.1.3` |
 
 - Email must be unique per user.  
 - Custom attribute names must be communicated during setup.
