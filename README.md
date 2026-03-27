@@ -210,7 +210,7 @@ KwP31R7m1J9arub+dAck5tPm2w==
 
 ### Example Attribute Mapping in Entra ID
 
-| Logical Field | Source | SAML Attribute/Claim |
+| Logical Field | Source | Default SAML Attribute/Claim |
 |---------------|---------------|------------------|
 | First Name | `user.givenname` | `http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname` |
 | Last Name | `user.surname` | `http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname` |
